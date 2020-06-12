@@ -38,7 +38,7 @@ public:
     }
 };
 
-TEST_F(BuiltInTypesFixture, function_in_module_returns_value)
+TEST_F(BuiltInTypesFixture, function0_returns_value)
 {
     jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
     jl_function_t *jf_hello = julia_bind::get_function(jm_simple, "hello");
@@ -47,7 +47,10 @@ TEST_F(BuiltInTypesFixture, function_in_module_returns_value)
 
     if (jl_typeis(ret, jl_string_type)) {
         const char* value = (const char*)jl_string_ptr(ret);
-        if (jl_exception_occurred()) std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
+        if (jl_exception_occurred()) {
+            std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
+            FAIL();
+        } 
         EXPECT_STREQ("hello", value);
     } else {
         FAIL() << "Unexpected return type.";

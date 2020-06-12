@@ -5,9 +5,9 @@ function hello()
     return "hello"
 end
 
-export always_five
-function always_five()
-    return 5.0
+export add
+function add(x, y)
+    return x + y
 end
 
 end
