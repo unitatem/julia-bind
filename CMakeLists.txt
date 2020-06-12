@@ -6,6 +6,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(TESTS "enable/disable tests" ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Release)
+
 add_compile_options(
     -Wall
     -Wextra
