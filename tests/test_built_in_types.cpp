@@ -38,9 +38,11 @@ public:
     }
 };
 
+const std::string path_to_test = "../../tests/";
+
 TEST_F(BuiltInTypesFixture, function0_returns_value)
 {
-    jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
+    jl_module_t* jm_simple = julia_bind::load_module(path_to_test + "simple.ji", "simple");
     jl_function_t *jf_hello = julia_bind::get_function(jm_simple, "hello");
 
     jl_value_t* ret = julia_bind::call_function(jf_hello);
@@ -51,7 +53,7 @@ TEST_F(BuiltInTypesFixture, function0_returns_value)
 
 TEST_F(BuiltInTypesFixture, function1_returns_value)
 {
-    jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
+    jl_module_t* jm_simple = julia_bind::load_module(path_to_test + "simple.ji", "simple");
     jl_function_t *jf_echo = julia_bind::get_function(jm_simple, "echo");
 
     jl_value_t* ret = julia_bind::call_function(jf_echo, -9.65);
@@ -62,7 +64,7 @@ TEST_F(BuiltInTypesFixture, function1_returns_value)
 
 TEST_F(BuiltInTypesFixture, function2_returns_value)
 {
-    jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
+    jl_module_t* jm_simple = julia_bind::load_module(path_to_test + "simple.ji", "simple");
     jl_function_t *jf_add = julia_bind::get_function(jm_simple, "add");
 
     jl_value_t* ret = julia_bind::call_function(jf_add, 10.30, 7);

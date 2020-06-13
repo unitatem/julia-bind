@@ -1,0 +1,20 @@
+name: Q&A
+
+on:
+  [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ">= 1.4.2"
+      - name: build
+        run: |
+          export JULIA_DIR="/home/runner/julia"
+          tools/build.sh
+      - name: test
+        run: tools/test.sh
