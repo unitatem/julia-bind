@@ -42,6 +42,7 @@ TEST_F(BuiltInTypesFixture, function0_returns_value)
 {
     jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
     jl_function_t *jf_hello = julia_bind::get_function(jm_simple, "hello");
+
     jl_value_t* ret = julia_bind::call_function(jf_hello);
 
     if (jl_typeis(ret, jl_string_type)) {
@@ -56,14 +57,12 @@ TEST_F(BuiltInTypesFixture, function0_returns_value)
     }
 }
 
-TEST_F(BuiltInTypesFixture, function2_returns_value)
+TEST_F(BuiltInTypesFixture, function1_returns_value)
 {
     jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
-    jl_function_t *jf_add = julia_bind::get_function(jm_simple, "add");
+    jl_function_t *jf_echo = julia_bind::get_function(jm_simple, "echo");
 
-    jl_value_t *x = jl_box_float64(10.30);
-    jl_value_t *y = jl_box_float64(7.04);
-    jl_value_t* ret = julia_bind::call_function(jf_add, x, y);
+    jl_value_t* ret = julia_bind::call_function(jf_echo, -9.65);
  
     if (jl_typeis(ret, jl_float64_type)) {
         double value = jl_unbox_float64(ret);
@@ -71,7 +70,26 @@ TEST_F(BuiltInTypesFixture, function2_returns_value)
             std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
             FAIL();
         }
-        EXPECT_DOUBLE_EQ(17.34, value);
+        EXPECT_DOUBLE_EQ(-9.65, value);
+    } else {
+        FAIL() << "Unexpected return type.";
+    }
+}
+
+TEST_F(BuiltInTypesFixture, function2_returns_value)
+{
+    jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
+    jl_function_t *jf_add = julia_bind::get_function(jm_simple, "add");
+
+    jl_value_t* ret = julia_bind::call_function(jf_add, 10.30, 7);
+ 
+    if (jl_typeis(ret, jl_float64_type)) {
+        double value = jl_unbox_float64(ret);
+        if (jl_exception_occurred()) {
+            std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
+            FAIL();
+        }
+        EXPECT_DOUBLE_EQ(17.30, value);
     } else {
         FAIL() << "Unexpected return type.";
     }

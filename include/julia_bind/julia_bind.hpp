@@ -52,7 +52,6 @@ jl_module_t* load_module(const std::string& file_path, const std::string& name)
     jl_module_t* module = reinterpret_cast<jl_module_t*>(jl_eval_string(cmd.c_str()));
     HANDLE_ERROR();
     EXPECT_NOT_NULLPTR(module);
-
     return module;
 }
 
@@ -61,53 +60,71 @@ jl_function_t* get_function(jl_module_t* module, const std::string& function_nam
     jl_function_t *function = jl_get_function(module, function_name.c_str());
     HANDLE_ERROR();
     EXPECT_NOT_NULLPTR(function);
-
     return function;
 }
 
-jl_value_t* int_call(jl_function_t* function)
+namespace parameter_packing
+{
+jl_value_t* pack(int value)
+{
+    static_assert(sizeof(int) == sizeof(int32_t));
+    jl_value_t* box = jl_box_int32(value);
+    HANDLE_ERROR();
+    EXPECT_NOT_NULLPTR(box);
+    return box;
+}
+
+jl_value_t* pack(double value)
+{
+    // static_assert(sizeof(double) == sizeof(double));
+    jl_value_t* box = jl_box_float64(value);
+    HANDLE_ERROR();
+    EXPECT_NOT_NULLPTR(box);
+    return box;
+}
+} // namespace parameter_packing
+
+namespace details_funcion_call
+{ 
+jl_value_t* call(jl_function_t* function)
 {
     jl_value_t* ret = jl_call0(function);
     HANDLE_ERROR();
-
     return ret;    
 }
 
 template<class T1>
-jl_value_t* int_call(jl_function_t* function, T1 a1)
+jl_value_t* call(jl_function_t* function, T1 a1)
 {
     jl_value_t* ret = jl_call1(function, a1);
     HANDLE_ERROR();
     EXPECT_NOT_NULLPTR(ret);
-
     return ret;    
 }
 
 template<class T1, class T2>
-jl_value_t* int_call(jl_function_t* function, T1 a1, T2 a2)
+jl_value_t* call(jl_function_t* function, T1 a1, T2 a2)
 {
     jl_value_t* ret = jl_call2(function, a1, a2);
     HANDLE_ERROR();
     EXPECT_NOT_NULLPTR(ret);
-
     return ret;    
 }
 
 template<class T1, class T2, class T3>
-jl_value_t* int_call(jl_function_t* function, T1 a1, T2 a2, T3 a3)
+jl_value_t* call(jl_function_t* function, T1 a1, T2 a2, T3 a3)
 {
     jl_value_t* ret = jl_call3(function, a1, a2, a3);
     HANDLE_ERROR();
     EXPECT_NOT_NULLPTR(ret);
-
     return ret;    
 }
+} // namespace details_funcion_call
 
-#include <iostream>
 template<typename... Types>
 jl_value_t* call_function(jl_function_t* function, Types... args)
 {    
-    return int_call(function, args...);
+    return details_funcion_call::call(function, parameter_packing::pack(args)...);
 }
 
 } // namespace julia_bind
