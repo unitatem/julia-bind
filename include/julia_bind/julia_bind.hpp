@@ -33,10 +33,16 @@ do { \
     handle_error(__FILE__, __LINE__, __FUNCTION__); \
 } while(0)
 
+#define THROW_EXCEPTION(type) \
+do { \
+    throw_exception(__FILE__, __LINE__, __FUNCTION__, type); \
+} while(0)
+
 #define EXPECT_NOT_NULLPTR(x) \
 do { \
-    if (x == nullptr) throw_exception(__FILE__, __LINE__, __FUNCTION__, "nullptr"); \
+    if (x == nullptr) THROW_EXCEPTION("nullptr"); \
 } while(0)
+
 
 jl_module_t* load_module(const std::string& file_path, const std::string& name)
 {
@@ -125,6 +131,23 @@ template<typename... Types>
 jl_value_t* call_function(jl_function_t* function, Types... args)
 {    
     return details_funcion_call::call(function, parameter_packing::pack(args)...);
+}
+
+namespace details_unpack
+{
+
+} // namespace details_unpack
+
+auto unpack(jl_value_t* packed_value)
+{
+    if (jl_typeis(packed_value, jl_float64_type)) {
+        double value = jl_unbox_float64(packed_value);
+        HANDLE_ERROR();
+        return value;
+    } else {
+        THROW_EXCEPTION("unexpected type");
+        throw "makes compiler happy";
+    }
 }
 
 } // namespace julia_bind

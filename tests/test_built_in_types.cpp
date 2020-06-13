@@ -63,17 +63,9 @@ TEST_F(BuiltInTypesFixture, function1_returns_value)
     jl_function_t *jf_echo = julia_bind::get_function(jm_simple, "echo");
 
     jl_value_t* ret = julia_bind::call_function(jf_echo, -9.65);
- 
-    if (jl_typeis(ret, jl_float64_type)) {
-        double value = jl_unbox_float64(ret);
-        if (jl_exception_occurred()) {
-            std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
-            FAIL();
-        }
-        EXPECT_DOUBLE_EQ(-9.65, value);
-    } else {
-        FAIL() << "Unexpected return type.";
-    }
+
+    double value = julia_bind::unpack(ret);
+    EXPECT_DOUBLE_EQ(-9.65, value);
 }
 
 TEST_F(BuiltInTypesFixture, function2_returns_value)
