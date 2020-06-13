@@ -42,8 +42,7 @@ TEST_F(BuiltInTypesFixture, function0_returns_value)
 {
     jl_module_t* jm_simple = julia_bind::load_module("simple.ji", "simple");
     jl_function_t *jf_hello = julia_bind::get_function(jm_simple, "hello");
-
-    jl_value_t* ret = jl_call0(jf_hello);
+    jl_value_t* ret = julia_bind::call_function(jf_hello);
 
     if (jl_typeis(ret, jl_string_type)) {
         const char* value = (const char*)jl_string_ptr(ret);
@@ -64,8 +63,8 @@ TEST_F(BuiltInTypesFixture, function2_returns_value)
 
     jl_value_t *x = jl_box_float64(10.30);
     jl_value_t *y = jl_box_float64(7.04);
-    jl_value_t* ret = jl_call2(jf_add, x, y);
-
+    jl_value_t* ret = julia_bind::call_function(jf_add, x, y);
+ 
     if (jl_typeis(ret, jl_float64_type)) {
         double value = jl_unbox_float64(ret);
         if (jl_exception_occurred()) {

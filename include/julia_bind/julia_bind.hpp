@@ -65,6 +65,51 @@ jl_function_t* get_function(jl_module_t* module, const std::string& function_nam
     return function;
 }
 
+jl_value_t* int_call(jl_function_t* function)
+{
+    jl_value_t* ret = jl_call0(function);
+    HANDLE_ERROR();
+
+    return ret;    
+}
+
+template<class T1>
+jl_value_t* int_call(jl_function_t* function, T1 a1)
+{
+    jl_value_t* ret = jl_call1(function, a1);
+    HANDLE_ERROR();
+    EXPECT_NOT_NULLPTR(ret);
+
+    return ret;    
+}
+
+template<class T1, class T2>
+jl_value_t* int_call(jl_function_t* function, T1 a1, T2 a2)
+{
+    jl_value_t* ret = jl_call2(function, a1, a2);
+    HANDLE_ERROR();
+    EXPECT_NOT_NULLPTR(ret);
+
+    return ret;    
+}
+
+template<class T1, class T2, class T3>
+jl_value_t* int_call(jl_function_t* function, T1 a1, T2 a2, T3 a3)
+{
+    jl_value_t* ret = jl_call3(function, a1, a2, a3);
+    HANDLE_ERROR();
+    EXPECT_NOT_NULLPTR(ret);
+
+    return ret;    
+}
+
+#include <iostream>
+template<typename... Types>
+jl_value_t* call_function(jl_function_t* function, Types... args)
+{    
+    return int_call(function, args...);
+}
+
 } // namespace julia_bind
 
 #endif // JULIA_BIND_JULIA_BIND_HPP_

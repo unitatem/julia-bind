@@ -5,6 +5,11 @@ function hello()
     return "hello"
 end
 
+export echo
+function echo(x)
+    return x
+end
+
 export add
 function add(x, y)
     return x + y
