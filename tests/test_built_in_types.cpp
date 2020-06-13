@@ -45,16 +45,8 @@ TEST_F(BuiltInTypesFixture, function0_returns_value)
 
     jl_value_t* ret = julia_bind::call_function(jf_hello);
 
-    if (jl_typeis(ret, jl_string_type)) {
-        const char* value = (const char*)jl_string_ptr(ret);
-        if (jl_exception_occurred()) {
-            std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
-            FAIL();
-        }
-        EXPECT_STREQ("hello", value);
-    } else {
-        FAIL() << "Unexpected return type.";
-    }
+    std::string value = julia_bind::unpack<std::string>(ret);
+    EXPECT_EQ("hello", value);
 }
 
 TEST_F(BuiltInTypesFixture, function1_returns_value)
@@ -64,7 +56,7 @@ TEST_F(BuiltInTypesFixture, function1_returns_value)
 
     jl_value_t* ret = julia_bind::call_function(jf_echo, -9.65);
 
-    double value = julia_bind::unpack(ret);
+    double value = julia_bind::unpack<double>(ret);
     EXPECT_DOUBLE_EQ(-9.65, value);
 }
 
@@ -75,14 +67,6 @@ TEST_F(BuiltInTypesFixture, function2_returns_value)
 
     jl_value_t* ret = julia_bind::call_function(jf_add, 10.30, 7);
  
-    if (jl_typeis(ret, jl_float64_type)) {
-        double value = jl_unbox_float64(ret);
-        if (jl_exception_occurred()) {
-            std::cout << __LINE__ << " " << jl_typeof_str(jl_exception_occurred()) << std::endl;
-            FAIL();
-        }
-        EXPECT_DOUBLE_EQ(17.30, value);
-    } else {
-        FAIL() << "Unexpected return type.";
-    }
+    double value = julia_bind::unpack<double>(ret);
+    EXPECT_DOUBLE_EQ(17.30, value);
 }

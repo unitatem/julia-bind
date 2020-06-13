@@ -133,17 +133,30 @@ jl_value_t* call_function(jl_function_t* function, Types... args)
     return details_funcion_call::call(function, parameter_packing::pack(args)...);
 }
 
-namespace details_unpack
-{
+template<typename T>
+auto unpack(jl_value_t* packed_value);
 
-} // namespace details_unpack
-
-auto unpack(jl_value_t* packed_value)
+template<>
+auto unpack<double>(jl_value_t* packed_value)
 {
     if (jl_typeis(packed_value, jl_float64_type)) {
         double value = jl_unbox_float64(packed_value);
         HANDLE_ERROR();
         return value;
+    } else {
+        THROW_EXCEPTION("unexpected type");
+        throw "makes compiler happy";
+    }
+}
+
+template<>
+auto unpack<std::string>(jl_value_t* packed_value)
+{
+    if (jl_typeis(packed_value, jl_string_type)) {
+        const char* value = (const char*)jl_string_ptr(packed_value);
+        HANDLE_ERROR();
+        EXPECT_NOT_NULLPTR(value);
+        return std::string(value);
     } else {
         THROW_EXCEPTION("unexpected type");
         throw "makes compiler happy";
