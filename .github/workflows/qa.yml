@@ -14,7 +14,16 @@ jobs:
           version: ">= 1.4.2"
       - name: build
         run: |
-          export JULIA_DIR="/home/runner/julia"
+          # this 'if' is related to different values of env.HOME in GitHub and Docker
+          # https://github.com/julia-actions/setup-julia/issues/34
+          if [ -d /home/runner/julia ]; then
+            export JULIA_DIR="/home/runner/julia"
+          elif [ -d /github/home/julia ]; then
+            export JULIA_DIR="/github/home/julia"
+          else
+            echo "Unexpected julia install directory"
+            exit 1
+          fi
           tools/build.sh
       - name: test
         run: tools/test.sh
