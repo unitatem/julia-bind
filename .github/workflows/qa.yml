@@ -14,32 +14,11 @@ jobs:
           version: ">= 1.4.2"
       - name: build
         run: |
-          set -x
-
-          pwd
-          julia --version
-          which julia
-          echo ""
-
-          JULIA_DIR=`which julia`
-          echo $JULIA_DIR
-          JULIA_DIR=${JULIA_DIR%"/bin/julia"}
-          echo $JULIA_DIR
-
+          # Find and export location where Julia is installed
+          JULIA_EXE=`which julia`
+          JULIA_DIR=${JULIA_EXE%"/bin/julia"}
           export JULIA_DIR="$JULIA_DIR"
 
-          # this 'if' is related to different values of env.HOME in GitHub and Docker
-          # https://github.com/julia-actions/setup-julia/issues/34
-          # if [ -d /home/runner/julia ]; then
-          #   export JULIA_DIR="/home/runner/julia"
-          # elif [ -f /github/home/julia ]; then
-          #   export JULIA_DIR="/github/home/julia"
-          # else
-          #   echo "Unexpected julia install directory."
-          #   echo -n "process.env.HOME = "
-          #   node -e "console.log(process.env.HOME)"
-          #   exit 1
-          # fi
           tools/build.sh
       - name: test
         run: tools/test.sh
